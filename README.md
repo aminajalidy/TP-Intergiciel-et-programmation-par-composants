@@ -8,8 +8,9 @@
 # Technologies utilisées
 <a href="https://kafka.apache.org/" target="_blank" rel="noreferrer"> <img src="https://imgs.search.brave.com/vUNX5vHj053oH8GdZXva9X8byPP-0OQMCLXSgv3rLtU/rs:fit:500:0:0/g:ce/aHR0cHM6Ly9zdGF0/aWMud2lraWEubm9j/b29raWUubmV0L2xv/Z29wZWRpYS9pbWFn/ZXMvZC9kOC9BcGFj/aGVfS2Fma2FfTG9n/by5qcGcvcmV2aXNp/b24vbGF0ZXN0L3Nj/YWxlLXRvLXdpZHRo/LWRvd24vMzAwP2Ni/PTIwMjIwNzAzMDIz/NjEz.jpeg" alt="kafka" width="260" height="100"/> </a> <a href="https://www.docker.com/" target="_blank" rel="noreferrer"> <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/docker/docker-original-wordmark.svg" alt="docker" width="100" height="100"/> </a> <a href="https://maven.apache.org/" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/vscode-icons/vscode-icons/master/icons/file_type_maven.svg" alt="maven" width="100" height="100"/></a>
 
-
-
 # Description du projet- Kafka Sécurisé via SSL
 
 Ce projet consiste à développer une application Kafka sécurisée via SSL, utilisant Maven et Java. Le projet inclut un producteur et un consommateur Kafka, qui démontrent le bon fonctionnement d'un broker Kafka sécurisé.
+
+# Architecture
+
