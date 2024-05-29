@@ -13,4 +13,11 @@
 Ce projet consiste à développer une application Kafka sécurisée via SSL, utilisant Maven et Java. Le projet inclut un producteur et un consommateur Kafka, qui démontrent le bon fonctionnement d'un broker Kafka sécurisé.
 
 # Architecture
+<img src="https://github.com/aminajalidy/TP-Intergiciel-et-programmation-par-composants/assets/103306906/84d67470-024a-4129-ac4c-59cfd0b77479" alt="Docker Logo" width="550"/>
+
+Cette vue simplifiée du projet montre comment le producteur et le consommateur se connectent au broker Kafka sécurisé via SSL. Le producteur envoie des messages au broker Kafka, et le consommateur lit les messages du broker Kafka, le tout via une connexion sécurisée SSL.
+
+<img src="https://github.com/aminajalidy/TP-Intergiciel-et-programmation-par-composants/assets/103306906/a81e56b0-64ef-4098-8e3b-5701149ffe9d" alt="Docker Logo" width="550"/>
+
+Cette illustration montre la répartition des messages envoyés par le producteur sur différentes partitions du topic Kafka. Chaque partition est consommée par un consommateur distinct, permettant une mise à l'échelle et une distribution équilibrée des messages.
 
