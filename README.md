@@ -21,3 +21,11 @@ Cette vue simplifiée du projet montre comment le producteur et le consommateur 
 
 Cette illustration montre la répartition des messages envoyés par le producteur sur différentes partitions du topic Kafka. Chaque partition est consommée par un consommateur distinct, permettant une mise à l'échelle et une distribution équilibrée des messages.
 
+
+# Fonctionnalités principales
+
+- Sécurisation SSL : Toutes les communications entre le producteur, le consommateur et le broker Kafka sont sécurisées via SSL.
+- Gestion des partitions : Le producteur envoie les messages de manière équitable à travers plusieurs partitions, et les consommateurs   peuvent être configurés pour lire à partir de partitions spécifiques.
+- Configuration Docker : Utilisation de Docker et Docker Compose pour faciliter le déploiement et la gestion des services Kafka et Zookeeper.
+- Support multi-consommateurs : Ajout facile de nouveaux consommateurs qui peuvent lire des partitions spécifiques selon les besoins.
+
