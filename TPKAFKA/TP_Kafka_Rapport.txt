@@ -1,0 +1,161 @@
+docker compose build
+docker compose down
+docker compose up
+
+Rapport de TP Kafka
+
+I. Études et Synthèses
+
+1. Sécurisation du Broker avec SSL et Certificat
+Nous avons sécurisé notre broker Kafka en utilisant SSL et des certificats pour chiffrer la communication entre les producteurs et les consommateurs. Voici les étapes suivies :
+- Création des certificats SSL et des keystores/truststores pour le client.
+- Configuration du broker Kafka pour utiliser SSL.
+
+2. Modifications du Programme Démo
+Nous avons modifié notre programme démo pour que le producteur et le consommateur puissent se connecter au broker en utilisant la couche de chiffrement SSL.
+
+II. Scripts et Codes Sources
+
+1. Configuration SSL
+- Keystore et Truststore
+  - Keystore : C:/TPKAFKA/server_certs/client.keystore.jks
+  - Truststore : C:/TPKAFKA/server_certs/client.truststore.jks
+  - Mot de passe : raniabadi
+
+2. Producteur Kafka
+
+import org.apache.kafka.clients.producer.*;
+import java.util.Properties;
+
+public class BalancedKafkaProducer {
+    public static void main(String[] args) {
+        Properties props = new Properties();
+        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+        props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
+        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
+        props.put("security.protocol", "SSL");
+        props.put("ssl.truststore.location", "C:/TPKAFKA/server_certs/client.truststore.jks");
+        props.put("ssl.truststore.password", "raniabadi");
+        props.put("ssl.keystore.location", "C:/TPKAFKA/server_certs/client.keystore.jks");
+        props.put("ssl.keystore.password", "raniabadi");
+        props.put("ssl.key.password", "raniabadi");
+
+        KafkaProducer<String, String> producer = new KafkaProducer<>(props);
+
+        for (int i = 0; i < 10; i++) {
+            String key = Integer.toString(i);
+            String value = "Message " + i;
+            ProducerRecord<String, String> record = new ProducerRecord<>("firsttopic", key, value);
+            producer.send(record, new Callback() {
+                public void onCompletion(RecordMetadata metadata, Exception exception) {
+                    if (exception != null) {
+                        exception.printStackTrace();
+                    } else {
+                        System.out.printf("Message sent to topic: %s partition: %d offset: %d%n", metadata.topic(), metadata.partition(), metadata.offset());
+                    }
+                }
+            });
+        }
+
+        producer.close();
+    }
+}
+
+3. Consommateur Kafka
+
+import org.apache.kafka.clients.consumer.*;
+import org.apache.kafka.common.TopicPartition;
+import org.apache.kafka.common.serialization.StringDeserializer;
+import java.time.Duration;
+import java.util.Collections;
+import java.util.Properties;
+
+public class PartitionKafkaConsumer {
+    public static void main(String[] args) {
+        int partitionNumber = Integer.parseInt(args[0]);
+
+        Properties props = new Properties();
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, "test-group");
+        props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+        props.put("security.protocol", "SSL");
+        props.put("ssl.truststore.location", "C:/TPKAFKA/server_certs/client.truststore.jks");
+        props.put("ssl.truststore.password", "raniabadi");
+        props.put("ssl.keystore.location", "C:/TPKAFKA/server_certs/client.keystore.jks");
+        props.put("ssl.keystore.password", "raniabadi");
+        props.put("ssl.key.password", "raniabadi");
+
+        KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props);
+        TopicPartition partition = new TopicPartition("firsttopic", partitionNumber);
+        consumer.assign(Collections.singletonList(partition));
+
+        while (true) {
+            ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(1000));
+            for (ConsumerRecord<String, String> record : records) {
+                System.out.printf("Consumed message: key = %s, value = %s, partition = %d, offset = %d%n",
+                        record.key(), record.value(), record.partition(), record.offset());
+            }
+        }
+    }
+}
+
+4. Création du Topic
+
+./kafka-topics.sh --create --bootstrap-server localhost:9093 --replication-factor 1 --partitions 3 --topic firsttopic
+
+ext .bat sans ./
+5. Lancement des Consommateurs
+
+java -cp ".;C:/TPKAFKA/libs/kafka-clients-2.7.0.jar;C:/TPKAFKA/libs/slf4j-api-1.7.30.jar;C:/TPKAFKA/libs/slf4j-simple-1.7.30.jar" PartitionKafkaConsumer 0
+java -cp ".;C:/TPKAFKA/libs/kafka-clients-2.7.0.jar;C:/TPKAFKA/libs/slf4j-api-1.7.30.jar;C:/TPKAFKA/libs/slf4j-simple-1.7.30.jar" PartitionKafkaConsumer 1
+java -cp ".;C:/TPKAFKA/libs/kafka-clients-2.7.0.jar;C:/TPKAFKA/libs/slf4j-api-1.7.30.jar;C:/TPKAFKA/libs/slf4j-simple-1.7.30.jar" PartitionKafkaConsumer 2
+
+Conclusion
+
+Toutes les étapes pour gérer les partitions avec Kafka sont complètes. Vous avez correctement configuré et testé votre producteur et vos consommateurs pour travailler avec des partitions.
+
+III. Remise des Documents
+
+Vous devez maintenant soumettre :
+- Les réponses aux questions I et II.
+- Les scripts, codes sources, fichiers "properties" modifiés.
+- Un document Git (GitHub) avant le 29 mai 2024.
+- Invitez votre enseignant à accéder à votre dépôt GitHub.
+
+
+
+
+
+
+
+
+CERTIFICATS:
+
+
+
+openssl req -new -newkey rsa:4096 -days 365 -x509 -subj "/CN=Rania-Badi-CA" -keyout ca-key -out ca-cert -nodes
+keytool -genkey -keyalg RSA -keystore kafka.server.keystore.jks -validity 365 -storepass raniabadi -keypass raniabadi -dname "CN=localhost" -storetype pkcs12
+keytool -keystore kafka.server.keystore.jks -certreq -file cert-file -storepass raniabadi -keypass raniabadi
+openssl x509 -req -CA ca-cert -CAkey ca-key -in cert-file -out cert-signed -days 365 -CAcreateserial -passin pass:raniabadi
+keytool -keystore kafka.server.truststore.jks -alias CARoot -import -file ca-cert -storepass raniabadi -keypass raniabadi -noprompt
+keytool -keystore kafka.server.keystore.jks -alias CARoot -import -file ca-cert -storepass raniabadi -keypass raniabadi -noprompt
+
+
+keytool -export -alias mykey -keystore kafka.server.keystore.jks -file broker-cert.crt -storepass raniabadi
+keytool -import -alias broker-cert -keystore client.truststore.jks -file broker-cert.crt -storepass raniabadi -noprompt
+
+keytool -genkey -alias kafka-selfsigned-cert -keystore server.keystore.jks -keyalg RSA -storepass raniabadi -keypass raniabadi -validity 365 -dname "CN=localhost"
+keytool -export -alias kafka-selfsigned-cert -keystore server.keystore.jks -rfc -file server-cert.pem -storepass raniabadi
+keytool -import -alias kafka-selfsigned-cert -keystore client.truststore.jks -file server-cert.pem -storepass raniabadi
+
+
+
+keytool -genkey -alias client-key -keystore client.keystore.jks -keyalg RSA -keysize 2048 -validity 365 -storepass raniabadi -keypass raniabadi -dname "CN=client, OU=monorg, O=masoci, L=maville, S=monetat, C=monpays"
+keytool -certreq -alias client-key -keystore client.keystore.jks -file client.csr -storepass raniabadi
+openssl x509 -req -CA ca-cert -CAkey ca-key -in client.csr -out client-signed-cert -days 365 -CAcreateserial -passin pass:raniabadi
+keytool -import -alias ca-cert -keystore client.keystore.jks -file ca-cert -storepass raniabadi -noprompt
+keytool -import -alias client-key -keystore client.keystore.jks -file client-signed-cert -storepass raniabadi -noprompt
+
+
